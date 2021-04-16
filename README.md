@@ -8,7 +8,7 @@
 3. **Create key ideas generator**
 4. **Create details generator**
 5. **Create summary generator**
-6. Build Heroku app
+6. Build app
 
 #### Article Summary Details (BART)
 
@@ -22,5 +22,7 @@ BART, or Bidirectional and Auto-Regressive Transformers, will be used for this t
 > BART is particularly effective when fine tuned for text generation but also works well for comprehension tasks. It matches the performance of RoBERTa with comparable training resources on GLUE and SQuAD, achieves new state-of-the-art results on a range of abstractive dialogue, question answering, and summarization tasks, with gains of up to 6 ROUGE.
 
 Here we will use BART-CNN, which has been fine-tuned on the CNN article/summarization datatest.
+
+<img src="https://github.com/mattignal/article-summary-details/blob/main/bart_app.png">
 
 <img src="https://github.com/mattignal/article-summary-details/blob/main/Abstract_details.png">
