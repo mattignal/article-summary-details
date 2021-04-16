@@ -5,7 +5,7 @@ import nltk
 import urllib.request
 from newspaper import Article
 from transformers import pipeline, BartTokenizer, BartForConditionalGeneration, BartConfig
-from apply_bart import get_article, drop_paragraphs, chunk_paragraphs, key_details, generate_summary
+from apply_bart import get_article, drop_paragraphs, chunk_paragraphs, get_key_details, generate_summary
 
 
 def main():
@@ -30,27 +30,45 @@ def main():
         url = st.text_input("", "https://monthlyreview.org/2009/04/01/the-credit-crisis-is-the-international-role-of-the-dollar-at-stake/")
         st.markdown(f"[*View Article*]({url})")
         article, title, authors, date = get_article(url)
+        
+    paragraphs = create_paragraphs(article)
     
-    st.markdown("<h1 style='text-align: center;'>Abstract✏️</h1>", unsafe_allow_html=True)
-    create_abstract(paragraphs, title, authors, date)
+    st.markdown("<h1 style='text-align: center;'>Get Abstract</h1>", unsafe_allow_html=True)
+    absract = create_abstract(paragraphs, title, authors, date)
+    st.markdown(f"<p align='justify'>{abstract}</p>", unsafe_allow_html=True)
+
+    for index, paragraph in enumerate(paragraphs):
+        st.markdown(f"<p align='justify'>{index, paragraph}</p>", unsafe_allow_html=True)
     
     # Remove Paragraphs
     st.markdown("<h3 style='text-align: center;'>Optional: Remove Paragraphs</h3>", unsafe_allow_html=True)
     list_to_drop = st.text_input('List to drop', 'e.g. 1, 2, 6')
     paragraphs = drop_paragraphs(paragraphs, list(list_to_drop))
+
         
-    # Create paragraphs
-    st.markdown("<h3 style='text-align: center;'>Create Paragraphs</h3>", unsafe_allow_html=True)
+    # Chunk paragraphs
+    st.markdown("<h3 style='text-align: center;'>Chunk Paragraphs</h3>", unsafe_allow_html=True)
     granularity = st.slider("Granularity", 1, 100)
     paragraph_chunks = chunk_paragraphs(paragraphs, granularity=2)
     
     # Get Key Details
-    st.markdown("<h3 style='text-align: center;'>Create Paragraphs</h3>", unsafe_allow_html=True)
-    details_list = key_details(paragraph_chunks)
+    st.markdown("<h3 style='text-align: center;'>Get Key Details</h3>", unsafe_allow_html=True)
+    details_list = []
+    for chunk in paragraph_chunks:
+        key_idea, details = get_key_details(chunk)
+        st.markdown(f"<p align='justify'>Key Idea:</p>", unsafe_allow_html=True)
+        st.markdown(f"<p align='justify'>{Key Idea}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p align='justify'>Details:</p>", unsafe_allow_html=True)
+        st.markdown(f"<p align='justify'>{details}</p>", unsafe_allow_html=True)
+        details_list.append(details)
     
     # Generate Summary
-    generate_summary(details_list, authors, granularity=2)
-    
+    st.markdown("<h3 style='text-align: center;'>Get Summary</h3>", unsafe_allow_html=True)
+    paragraph_chunks = chunk_paragraphs(details_list, granularity=granularity)
+    for chunk in paragraph_chunks:
+        summary = get_summary(chunk)
+        st.markdown(f"<p align='justify'>{summary}</p>", unsafe_allow_html=True)
+
 
 #     # Summarize
 #     sum_level = st.radio("Output Length: ", ["Short", "Medium"])
