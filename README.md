@@ -23,6 +23,7 @@ BART, or Bidirectional and Auto-Regressive Transformers, will be used for this t
 
 Here we will use BART-CNN, which has been fine-tuned on the CNN article/summarization datatest.
 
+
 <img src="https://github.com/mattignal/article-summary-details/blob/main/bart_app.png">
 
 <img src="https://github.com/mattignal/article-summary-details/blob/main/Abstract_details.png">
