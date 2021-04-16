@@ -21,24 +21,12 @@ def get_article(url):
   title = article.title
   authors = article.authors
   date = str(article.publish_date.date())
-  print("Title:", wrapper.fill(title))
-  print("Authors:", str(article.authors))
-  print("Date Published:", date)
-  print("Number of characters:", len(article.text))
   return article, title, authors, date
   
   def create_paragraphs(article):
   """Buckets into paragraphs for analysis"""
   paragraphs = article.text.split('\n\n')
   paragraphs = [x for x in paragraphs if len(x) > 100] # must be > 100 characters (assume else is heading or irrelevant)
-  print("Paragraphs:")
-  for index, paragraph in enumerate(paragraphs): # print sentences
-    print("{}: {}".format(index + 1, paragraph))
-
-  print("\nYou can remove any paragraphs you deem unfit by running \n    "
-  "paragraphs = drop_paragraphs(paragraphs, list_to_drop)"
-  "\nwhere list_to_drop is a list of the above numbers.")
-
   return paragraphs
 
 def drop_paragraphs(paragraphs, list_to_drop):
@@ -58,26 +46,7 @@ def create_abstract(paragraphs, title, authors, date):
   abstract = cnn_tokenizer.decode(summary_ids[0], skip_special_tokens=True, clean_up_tokenization_spaces=True)
   abstract = re.sub(r", writes ([^\s]+) ([^\s]+).", ", writes {}.".format(authors[0]), abstract) # sometimes misses authors name
   abstract = re.sub(r", says ([^\s]+) ([^\s]+)", "", abstract) # sometimes misses authors name
-  print("Title:", wrapper.fill(title))
-  print("Authors:", wrapper.fill(str(authors)))
-  print("Date:", wrapper.fill(date))
-  print("\nAbstract:", wrapper.fill(abstract))
-  
-def create_abstract(paragraphs, title, authors, date):
-  article_cleaned = " ".join(paragraphs)
-  inputs = cnn_tokenizer([article_cleaned], max_length=1024, truncation=True, # limited to first 1024 tokens
-                         return_tensors='pt')
-  summary_ids = cnn_model.generate(inputs['input_ids'], num_return_sequences=1,
-                                  early_stopping=True, num_beams=3,
-                                  min_length=80, max_length=120, 
-                                  do_sample=False)
-  abstract = cnn_tokenizer.decode(summary_ids[0], skip_special_tokens=True, clean_up_tokenization_spaces=True)
-  abstract = re.sub(r", writes ([^\s]+) ([^\s]+).", ", writes {}.".format(authors[0]), abstract) # sometimes misses authors name
-  abstract = re.sub(r", says ([^\s]+) ([^\s]+)", "", abstract) # sometimes misses authors name
-  print("Title:", wrapper.fill(title))
-  print("Authors:", wrapper.fill(str(authors)))
-  print("Date:", wrapper.fill(date))
-  print("\nAbstract:", wrapper.fill(abstract))
+  return abstract
   
 def chunk_paragraphs(paragraphs, granularity=2):
   """Chunks paragraphs into start, end, and then a series of middle paragraphs
@@ -140,6 +109,11 @@ def key_details(paragraph_chunks):
   """Gets key ideas and details from each part of article"""
   details_list = []
   for chunk in paragraph_chunks:
+    key_idea, details = get_key_details(chunk)
+    details_list.append(details)
+  return details_list
+
+def get_key_details(chunk):
     inputs = cnn_tokenizer([chunk], max_length=1024, return_tensors='pt', truncation=True)
     summary_ids = cnn_model.generate(inputs['input_ids'], num_return_sequences=1, output_scores=False, 
                                   early_stopping=True, num_beams=3, length_penalty=0.2)
@@ -153,8 +127,6 @@ def key_details(paragraph_chunks):
     nlp = English()
     nlp.add_pipe(nlp.create_pipe('sentencizer'))
     key_idea = [sent.string.strip() for sent in nlp(key_idea).sents][0]
-    print(100 * '-')
-    print("Key Idea:", wrapper.fill(key_idea))
     summary_ids = cnn_model.generate(inputs['input_ids'], num_return_sequences=1,
                                   early_stopping=True, num_beams=2, 
                                   min_length=80, 
@@ -184,16 +156,18 @@ def key_details(paragraph_chunks):
     details = re.sub(r", says ([^\s]+) ([^\s]+).", ".", details) # sometimes misses authors name
     details = details.replace(", he says", "") # sometimes misses authors name
     details = re.sub(r"\. \b[A-Z].*?\b\: ", ". ", details) # sometimes misses authors name
-    print("\nDetails:", wrapper.fill(details))
-    details_list.append(details)
-  return details_list
-  
+    return key_idea, details
+    
  def generate_summary(details_list, authors, granularity=2):
   """generates summary"""
   paragraph_chunks = chunk_paragraphs(details_list, granularity=granularity)
-  # print("Number of chunks:", len(paragraph_chunks))
-  print("Summary:\n")
+  summaries = []
   for chunk in paragraph_chunks:
+    summary = get_summary(chunk)
+    summaries.append(summary)
+  return summaries
+
+def get_summary(chunk):
     inputs = cnn_tokenizer([chunk], max_length=1024, truncation=True, # limited to first 1024 tokens
                           return_tensors='pt')
     summary_ids = cnn_model.generate(inputs['input_ids'], num_return_sequences=1,
@@ -204,5 +178,4 @@ def key_details(paragraph_chunks):
     summary = re.sub(r", writes ([^\s]+) ([^\s]+).", ", writes {}.".format(authors[0]), summary) # sometimes misses authors name
     summary = re.sub(r", says ([^\s]+) ([^\s]+)", "", summary)
     summary = re.sub(r"\. \b[A-Z].*?\b\: ", ". ", summary) # sometimes misses authors name
-    print(wrapper.fill(summary), "\n")
-
+    return summary
