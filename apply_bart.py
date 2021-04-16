@@ -12,20 +12,23 @@ import nltk
 nltk.download('punkt')
 
 wrapper = TextWrapper(width=80)
+cnn_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+cnn_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
 
 def get_article(url):
   """Get info about article"""
   article = Article(url)
   article.download()
   article.parse()
+  text = article.text
   title = article.title
   authors = article.authors
   date = str(article.publish_date.date())
-  return article, title, authors, date
+  return article, text, title, authors, date
   
-  def create_paragraphs(article):
+def create_paragraphs(text):
   """Buckets into paragraphs for analysis"""
-  paragraphs = article.text.split('\n\n')
+  paragraphs = text.split('\n\n')
   paragraphs = [x for x in paragraphs if len(x) > 100] # must be > 100 characters (assume else is heading or irrelevant)
   return paragraphs
 
@@ -54,10 +57,13 @@ def chunk_paragraphs(paragraphs, granularity=2):
   """
   if len(paragraphs) >= 6:
     block_off = 2
+    middle = paragraphs[block_off:-block_off]
   elif len(paragraphs) >= 4:
     block_off = 1
-
-  middle = paragraphs[block_off:-block_off]
+    middle = paragraphs[block_off:-block_off]
+  else:
+    block_off = 0
+    middle = paragraphs
 
   lengths = []
   chunks = []
@@ -83,25 +89,29 @@ def chunk_paragraphs(paragraphs, granularity=2):
   if len(chunks) == 0:
     chunks = [paragraphs_to_chunk]
 
-  start_chunks = " ".join(paragraphs[:block_off])
+  if block_off != 0: 
 
-  last_chunk = " ".join(chunks[-1])
-  end_chunks = " ".join(paragraphs[-block_off:])
-  inputs = cnn_tokenizer([last_chunk], return_tensors='pt', truncation=True)
-  lc_length = len(inputs['input_ids'][0])
-  inputs = cnn_tokenizer([end_chunks], return_tensors='pt', truncation=True)
-  ec_length = len(inputs['input_ids'][0])
-  if lc_length + ec_length <= 1024 and ec_length <= 1024 - avg_length*granularity:
-    # print("Adding final 'middle chunk' to the end of article chunk.")
-    end_chunks = last_chunk + " " + end_chunks
-    chunks = chunks[:-1]
+      start_chunks = " ".join(paragraphs[:block_off])
 
-  if len(chunks) > 0:
-    chunks = [". ".join(x) for x in chunks]
-    paragraph_chunks = [start_chunks] + chunks + [end_chunks]
+      last_chunk = " ".join(chunks[-1])
+      end_chunks = " ".join(paragraphs[-block_off:])
+      inputs = cnn_tokenizer([last_chunk], return_tensors='pt', truncation=True)
+      lc_length = len(inputs['input_ids'][0])
+      inputs = cnn_tokenizer([end_chunks], return_tensors='pt', truncation=True)
+      ec_length = len(inputs['input_ids'][0])
+      if lc_length + ec_length <= 1024 and ec_length <= 1024 - avg_length*granularity:
+        # print("Adding final 'middle chunk' to the end of article chunk.")
+        end_chunks = last_chunk + " " + end_chunks
+        chunks = chunks[:-1]
 
+      if len(chunks) > 0:
+        chunks = [". ".join(x) for x in chunks]
+        paragraph_chunks = [start_chunks] + chunks + [end_chunks]
+
+      else:
+          paragraph_chunks = [start_chunks] + [end_chunks]
   else:
-      paragraph_chunks = [start_chunks] + [end_chunks]
+      paragraph_chunks = [". ".join(x) for x in chunks]
 
   return paragraph_chunks
   
@@ -158,7 +168,7 @@ def get_key_details(chunk):
     details = re.sub(r"\. \b[A-Z].*?\b\: ", ". ", details) # sometimes misses authors name
     return key_idea, details
     
- def generate_summary(details_list, authors, granularity=2):
+def generate_summary(details_list, authors, granularity=2):
   """generates summary"""
   paragraph_chunks = chunk_paragraphs(details_list, granularity=granularity)
   summaries = []
@@ -167,7 +177,7 @@ def get_key_details(chunk):
     summaries.append(summary)
   return summaries
 
-def get_summary(chunk):
+def get_summary(chunk, authors):
     inputs = cnn_tokenizer([chunk], max_length=1024, truncation=True, # limited to first 1024 tokens
                           return_tensors='pt')
     summary_ids = cnn_model.generate(inputs['input_ids'], num_return_sequences=1,
