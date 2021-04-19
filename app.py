@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-import torch
+# import torch
 import nltk
 import urllib.request
 from newspaper import Article
