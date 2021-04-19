@@ -7,7 +7,7 @@ from textwrap import TextWrapper
 from summarizer import Summarizer
 from spacy.lang.en import English
 from transformers import pipeline, BartTokenizer, BartForConditionalGeneration, BartConfig
-import torch
+# import torch
 import nltk
 nltk.download('punkt')
 
