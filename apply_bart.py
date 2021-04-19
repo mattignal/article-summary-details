@@ -23,7 +23,12 @@ def get_article(url):
   text = article.text
   title = article.title
   authors = article.authors
-  date = str(article.publish_date.date())
+  if authors == []:
+      authors = ["Unknown"]
+  try:
+      date = str(article.publish_date.date())
+  except AttributeError:
+      date = "Unknown"
   return article, text, title, authors, date
   
 def create_paragraphs(text):
