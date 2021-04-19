@@ -1,7 +1,10 @@
-streamlit==0.60.0
-numpy==1.17.2
-transformers==2.10.0
-newspaper3k==0.2.8
+streamlit==0.80.0
+bert_extractive_summarizer==0.7.1
+transformers==4.5.0
+spacy==2.3.5
 nltk==3.5
-torch
-spacy
+numpy==1.19.2
+torch==1.8.1
+newspaper3k==0.2.8
+newspaper==0.1.0.7
+summarizer==0.0.7
