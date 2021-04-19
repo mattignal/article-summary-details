@@ -4,7 +4,6 @@ import numpy as np
 import re
 from newspaper import Article
 from textwrap import TextWrapper
-from summarizer import Summarizer
 from spacy.lang.en import English
 import torch
 from transformers import pipeline, BartTokenizer, BartForConditionalGeneration, BartConfig
