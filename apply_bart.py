@@ -13,6 +13,11 @@ nltk.download('punkt')
 wrapper = TextWrapper(width=80)
 # cnn_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
 # cnn_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+cnn_tokenizer = AutoTokenizer.from_pretrained("sshleifer/distilbart-cnn-6-6")
+
+cnn_model = AutoModelForSeq2SeqLM.from_pretrained("sshleifer/distilbart-cnn-6-6")
 
 def get_article(url):
   """Get info about article"""
