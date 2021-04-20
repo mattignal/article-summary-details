@@ -2,6 +2,5 @@ streamlit==0.80.0
 bert_extractive_summarizer==0.7.1
 transformers==4.5.0
 spacy==2.3.5
-nltk==3.5
 torch==1.8.1
 newspaper3k==0.2.8
