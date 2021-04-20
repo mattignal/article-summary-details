@@ -1,4 +1,4 @@
-# article-summary-details
+# article-summary-details [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/mattignal/article-summary-details/main/app.py)
 (WIP) [Generates abstract, key ideas, and related details from articles](https://colab.research.google.com/github/mattignal/article-summary-details/blob/main/Article_Summary_Details.ipynb)
 
 #### Progress (bold indicates if complete)
@@ -8,7 +8,8 @@
 3. **Create key ideas generator**
 4. **Create details generator**
 5. **Create summary generator**
-6. Build app
+6. **Build app in Streamlit** (see badge at top)
+7. Debug after switching from BART-Large-CNN to DISTILBART 6-6
 
 #### Article Summary Details (BART)
 
