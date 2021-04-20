@@ -7,8 +7,8 @@ from textwrap import TextWrapper
 from spacy.lang.en import English
 import torch
 from transformers import pipeline, BartTokenizer, BartForConditionalGeneration, BartConfig
-import nltk
-nltk.download('punkt')
+# import nltk
+# nltk.download('punkt')
 
 wrapper = TextWrapper(width=80)
 cnn_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
