@@ -11,8 +11,7 @@ import nltk
 nltk.download('punkt')
 
 wrapper = TextWrapper(width=80)
-cnn_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
-cnn_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
+
 
 def get_article(url):
   """Get info about article"""
@@ -43,6 +42,9 @@ def drop_paragraphs(paragraphs, list_to_drop):
   return paragraphs
  
 def create_abstract(paragraphs, title, authors, date):
+
+  cnn_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+  cnn_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
   article_cleaned = " ".join(paragraphs)
   inputs = cnn_tokenizer([article_cleaned], max_length=1024, truncation=True, # limited to first 1024 tokens
                          return_tensors='pt')
@@ -59,6 +61,8 @@ def chunk_paragraphs(paragraphs, granularity=2):
   """Chunks paragraphs into start, end, and then a series of middle paragraphs
   param granularity: controls level of detail, more granularity may mean more paragraphs to process
   """
+  cnn_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+  cnn_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
   if len(paragraphs) >= 6:
     block_off = 2
     middle = paragraphs[block_off:-block_off]
@@ -128,6 +132,8 @@ def key_details(paragraph_chunks):
   return details_list
 
 def get_key_details(chunk):
+    cnn_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+    cnn_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
     inputs = cnn_tokenizer([chunk], max_length=1024, return_tensors='pt', truncation=True)
     summary_ids = cnn_model.generate(inputs['input_ids'], num_return_sequences=1, output_scores=False, 
                                   early_stopping=True, num_beams=3, length_penalty=0.2)
@@ -182,6 +188,8 @@ def generate_summary(details_list, authors, granularity=2):
   return summaries
 
 def get_summary(chunk, authors):
+    cnn_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+    cnn_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
     inputs = cnn_tokenizer([chunk], max_length=1024, truncation=True, # limited to first 1024 tokens
                           return_tensors='pt')
     summary_ids = cnn_model.generate(inputs['input_ids'], num_return_sequences=1,
