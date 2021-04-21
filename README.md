@@ -1,6 +1,10 @@
 # article-summary-details [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/mattignal/article-summary-details/main/app.py) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mattignal/article-summary-details/blob/main/Article_Summary_Details.ipynb)
 
-(WIP) [Generates abstract, key ideas, and related details from articles](https://colab.research.google.com/github/mattignal/article-summary-details/blob/main/Article_Summary_Details.ipynb)
+Creates abstract, key ideas, details, and a summary. This repo contains two options:
+
+[Streamlit](https://share.streamlit.io/mattignal/article-summary-details/main/app.py): User-friendly interface which uses the Distilbart 6-6 model. This is the faster, lighter, option. More importantly, it is small enough to run successfully on Streamlit!
+
+[Colab](https://colab.research.google.com/github/mattignal/article-summary-details/blob/main/Article_Summary_Details.ipynb): Python notebook interface which uses full bart-large-cnn model. Better summarizations.
 
 #### Progress (bold indicates if complete)
 
@@ -10,7 +14,6 @@
 4. **Create details generator**
 5. **Create summary generator**
 6. **Build app in Streamlit** (see badge at top)
-7. Debug after switching from BART-Large-CNN to DISTILBART 6-6
 
 #### Article Summary Details (BART)
 
