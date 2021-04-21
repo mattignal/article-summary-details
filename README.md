@@ -1,4 +1,5 @@
-# article-summary-details [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/mattignal/article-summary-details/main/app.py)
+# article-summary-details [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/mattignal/article-summary-details/main/app.py) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mattignal/article-summary-details/blob/main/Article_Summary_Details.ipynb)
+
 (WIP) [Generates abstract, key ideas, and related details from articles](https://colab.research.google.com/github/mattignal/article-summary-details/blob/main/Article_Summary_Details.ipynb)
 
 #### Progress (bold indicates if complete)
